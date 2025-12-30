@@ -18,5 +18,29 @@ if [ -n "$ADVERTISE_IP" ]; then
     export PLEX_MEDIA_SERVER_ADVERTISE_IP="$ADVERTISE_IP"
 fi
 
+# Background claim task - waits for Plex to start, then claims
+if [ -f /tmp/plex_claim_token ]; then
+    (
+        CLAIM_TOKEN=$(cat /tmp/plex_claim_token)
+        echo "[plex] Waiting for Plex to start before claiming..."
+        # Wait up to 60 seconds for Plex to be ready
+        for i in $(seq 1 60); do
+            if fetch -qo /dev/null http://127.0.0.1:32400/identity 2>/dev/null; then
+                echo "[plex] Plex is ready, claiming server..."
+                RESPONSE=$(fetch -qo - "http://127.0.0.1:32400/myplex/claim?token=${CLAIM_TOKEN}" 2>&1)
+                if echo "$RESPONSE" | grep -q "error"; then
+                    echo "[plex] Claim failed: $RESPONSE"
+                else
+                    echo "[plex] Server claimed successfully!"
+                fi
+                rm -f /tmp/plex_claim_token
+                break
+            fi
+            sleep 1
+        done
+        [ -f /tmp/plex_claim_token ] && echo "[plex] Timed out waiting for Plex"
+    ) &
+fi
+
 cd /usr/local/share/plexmediaserver
 exec s6-setuidgid bsd "/usr/local/share/plexmediaserver/Plex Media Server"

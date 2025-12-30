@@ -1,0 +1,3 @@
+#!/bin/sh
+# Cleanup on plex exit
+rm -f /tmp/plex_claim_token

@@ -42,7 +42,7 @@ RUN PLEX_URL="https://plex.tv/downloads/latest/1?channel=16&build=freebsd-x86_64
 COPY root/ /
 
 # Make scripts executable
-RUN chmod +x /healthz /etc/services.d/plex/run /etc/cont-init.d/* 2>/dev/null || true
+RUN chmod +x /healthz /etc/services.d/plex/run /etc/services.d/plex/finish /etc/cont-init.d/* 2>/dev/null || true
 
 # Plex ports (matching official pms-docker)
 EXPOSE 32400/tcp 8324/tcp 32469/tcp 1900/udp 32410/udp 32412/udp 32413/udp 32414/udp
