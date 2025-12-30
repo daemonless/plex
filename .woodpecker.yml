@@ -27,6 +27,7 @@ steps:
           --base-version 15 \
           --build-arg "PLEX_CHANNEL=public" \
           --tag latest \
+          --tag-version \
           --alias public \
           --skip-wip \
           --login --push
@@ -54,6 +55,7 @@ steps:
           --base-version 15 \
           --build-arg "PLEX_CHANNEL=plexpass" \
           --tag plexpass \
+          --tag-version \
           --alias beta \
           --skip-wip \
           --login --push
