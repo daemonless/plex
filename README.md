@@ -48,7 +48,6 @@ podman run -d \
   -e PUID=1000 \
   -e PGID=1000 \
   -e TZ=America/New_York \
-  -e VERSION=container \
   -v /path/to/config:/config \
   -v /path/to/media:/data \
   -v /path/to/transcode:/transcode \
@@ -66,7 +65,7 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=America/New_York
-      - VERSION=container
+      # - VERSION=public
       # - PLEX_CLAIM=claim-xxxx
       # - ADVERTISE_IP=http://192.168.1.100:32400/
     volumes:
