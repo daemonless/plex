@@ -1,8 +1,10 @@
 # Woodpecker CI configuration for Plex Media Server
-# Runtime download - single image supports all channels via VERSION env var
+# Two builds:
+#   - :latest = runtime download
+#   - :x.y.z  = baked version (use with VERSION=container)
 
 steps:
-  - name: build
+  - name: build-latest
     image: /bin/sh
     environment:
       GITHUB_TOKEN:
@@ -16,6 +18,7 @@ steps:
           "https://raw.githubusercontent.com/daemonless/daemonless/build-v1.5.0/scripts/build.sh"
         chmod +x scripts/build.sh
 
+        # Runtime download image
         ./scripts/build.sh \
           --doas \
           --registry ghcr.io \
@@ -23,6 +26,31 @@ steps:
           --containerfile Containerfile \
           --base-version 15 \
           --tag latest \
+          --skip-wip \
+          --login --push
+
+  - name: build-versioned
+    image: /bin/sh
+    environment:
+      GITHUB_TOKEN:
+        from_secret: GITHUB_TOKEN
+      GITHUB_ACTOR:
+        from_secret: GITHUB_USER
+    commands:
+      - |
+        mkdir -p scripts
+        fetch -qo scripts/build.sh \
+          "https://raw.githubusercontent.com/daemonless/daemonless/build-v1.5.0/scripts/build.sh"
+        chmod +x scripts/build.sh
+
+        # Baked version image
+        ./scripts/build.sh \
+          --doas \
+          --registry ghcr.io \
+          --image ghcr.io/daemonless/plex \
+          --containerfile Containerfile.versioned \
+          --base-version 15 \
+          --tag versioned \
           --tag-version \
           --skip-wip \
           --login --push
