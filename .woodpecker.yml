@@ -23,6 +23,7 @@ steps:
           --containerfile Containerfile \
           --base-version 15 \
           --tag latest \
+          --tag-version \
           --skip-wip \
           --login --push
 

@@ -70,10 +70,13 @@ echo "[plex] VERSION=$VERSION"
 
 case "$VERSION" in
     container)
-        echo "[plex] Using container version, no update check"
-        if [ ! -x "$PLEX_BIN" ]; then
+        echo "[plex] Using baked container version, no update check"
+        if [ -x "$PLEX_BIN" ]; then
+            INSTALLED=$("$PLEX_BIN" --version 2>/dev/null | tr -d 'v')
+            echo "[plex] Installed version: $INSTALLED"
+        else
             echo "[plex] WARNING: No Plex binary found and VERSION=container"
-            echo "[plex] Set VERSION=public to download on first run"
+            echo "[plex] Set VERSION=public to download"
         fi
         ;;
 

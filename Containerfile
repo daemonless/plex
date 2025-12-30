@@ -29,6 +29,16 @@ ENV VERSION="public"
 RUN mkdir -p /config /transcode /data /app /usr/local/share/plexmediaserver && \
     chown -R bsd:bsd /config /transcode /data /app /usr/local/share/plexmediaserver
 
+# Download Plex at build time (public channel)
+# Runtime updates controlled by VERSION env var
+RUN PLEX_URL="https://plex.tv/downloads/latest/1?channel=16&build=freebsd-x86_64&distro=freebsd" && \
+    echo "Downloading Plex from: ${PLEX_URL}" && \
+    fetch -qo /tmp/plex.tar.bz2 "${PLEX_URL}" && \
+    tar -xf /tmp/plex.tar.bz2 -C /usr/local/share/plexmediaserver --strip-components=1 && \
+    rm /tmp/plex.tar.bz2 && \
+    "/usr/local/share/plexmediaserver/Plex Media Server" --version | tr -d 'v' > /app/version && \
+    chown -R bsd:bsd /usr/local/share/plexmediaserver /app
+
 # Copy service definition and init scripts
 COPY root/ /
 
