@@ -1,10 +1,8 @@
 # Woodpecker CI configuration for Plex Media Server
-# Builds 4 tags matching official pms-docker:
-#   - latest/public: public channel
-#   - beta/plexpass: plexpass channel
+# Runtime download - single image supports all channels via VERSION env var
 
 steps:
-  - name: build-public
+  - name: build
     image: /bin/sh
     environment:
       GITHUB_TOKEN:
@@ -18,45 +16,13 @@ steps:
           "https://raw.githubusercontent.com/daemonless/daemonless/build-v1.5.0/scripts/build.sh"
         chmod +x scripts/build.sh
 
-        # Build public channel -> latest and public tags
         ./scripts/build.sh \
           --doas \
           --registry ghcr.io \
           --image ghcr.io/daemonless/plex \
           --containerfile Containerfile \
           --base-version 15 \
-          --build-arg "PLEX_CHANNEL=public" \
           --tag latest \
-          --tag-version \
-          --alias public \
-          --skip-wip \
-          --login --push
-
-  - name: build-plexpass
-    image: /bin/sh
-    environment:
-      GITHUB_TOKEN:
-        from_secret: GITHUB_TOKEN
-      GITHUB_ACTOR:
-        from_secret: GITHUB_USER
-    commands:
-      - |
-        mkdir -p scripts
-        fetch -qo scripts/build.sh \
-          "https://raw.githubusercontent.com/daemonless/daemonless/build-v1.5.0/scripts/build.sh"
-        chmod +x scripts/build.sh
-
-        # Build plexpass channel -> plexpass and beta tags
-        ./scripts/build.sh \
-          --doas \
-          --registry ghcr.io \
-          --image ghcr.io/daemonless/plex \
-          --containerfile Containerfile \
-          --base-version 15 \
-          --build-arg "PLEX_CHANNEL=plexpass" \
-          --tag plexpass \
-          --tag-version \
-          --alias beta \
           --skip-wip \
           --login --push
 

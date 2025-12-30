@@ -1,0 +1,117 @@
+#!/bin/sh
+# Plex Media Server download/update script
+# Downloads Plex binary at runtime based on VERSION env var
+
+PLEX_DIR="/usr/local/share/plexmediaserver"
+PLEX_BIN="$PLEX_DIR/Plex Media Server"
+PREF_FILE="/config/Library/Application Support/Plex Media Server/Preferences.xml"
+
+# Get PlexOnlineToken from Preferences.xml
+get_token() {
+    if [ -f "$PREF_FILE" ]; then
+        sed -n 's/.*PlexOnlineToken="\([^"]*\)".*/\1/p' "$PREF_FILE"
+    fi
+}
+
+# Get download URL from Plex API
+get_download_url() {
+    local channel="$1"
+    local token="$2"
+    local url="https://plex.tv/downloads/details/5?build=freebsd-x86_64&channel=${channel}&distro=freebsd"
+
+    if [ -n "$token" ]; then
+        url="${url}&X-Plex-Token=${token}"
+    fi
+
+    fetch -qo - "$url" 2>/dev/null | sed -n 's/.*url="\([^"]*\)".*/\1/p' | head -1
+}
+
+# Get version from Plex API
+get_remote_version() {
+    local channel="$1"
+    local token="$2"
+    local url="https://plex.tv/downloads/details/5?build=freebsd-x86_64&channel=${channel}&distro=freebsd"
+
+    if [ -n "$token" ]; then
+        url="${url}&X-Plex-Token=${token}"
+    fi
+
+    fetch -qo - "$url" 2>/dev/null | sed -n 's/.*version="\([^"]*\)".*/\1/p' | head -1
+}
+
+# Download and install Plex
+install_plex() {
+    local download_url="$1"
+
+    echo "[plex] Downloading from: $download_url"
+
+    if ! fetch -qo /tmp/plex.tar.bz2 "$download_url"; then
+        echo "[plex] ERROR: Download failed"
+        return 1
+    fi
+
+    echo "[plex] Extracting..."
+    rm -rf "$PLEX_DIR"/*
+    tar -xf /tmp/plex.tar.bz2 -C "$PLEX_DIR" --strip-components=1
+    rm /tmp/plex.tar.bz2
+
+    # Save version
+    if [ -x "$PLEX_BIN" ]; then
+        "$PLEX_BIN" --version 2>/dev/null | tr -d 'v' > /app/version
+        echo "[plex] Installed version: $(cat /app/version)"
+    fi
+
+    chown -R bsd:bsd "$PLEX_DIR"
+    return 0
+}
+
+# Main logic
+echo "[plex] VERSION=$VERSION"
+
+case "$VERSION" in
+    container)
+        echo "[plex] Using container version, no update check"
+        if [ ! -x "$PLEX_BIN" ]; then
+            echo "[plex] WARNING: No Plex binary found and VERSION=container"
+            echo "[plex] Set VERSION=public to download on first run"
+        fi
+        ;;
+
+    public)
+        echo "[plex] Checking public channel..."
+        DOWNLOAD_URL=$(get_download_url "16" "")  # 16 = public channel
+        if [ -n "$DOWNLOAD_URL" ]; then
+            install_plex "$DOWNLOAD_URL"
+        else
+            echo "[plex] ERROR: Could not get download URL"
+        fi
+        ;;
+
+    latest|plexpass)
+        echo "[plex] Checking plexpass channel..."
+        TOKEN=$(get_token)
+        if [ -z "$TOKEN" ]; then
+            echo "[plex] WARNING: No PlexOnlineToken found in Preferences.xml"
+            echo "[plex] PlexPass requires authentication. Falling back to public channel."
+            DOWNLOAD_URL=$(get_download_url "16" "")
+        else
+            DOWNLOAD_URL=$(get_download_url "8" "$TOKEN")  # 8 = plexpass channel
+        fi
+
+        if [ -n "$DOWNLOAD_URL" ]; then
+            install_plex "$DOWNLOAD_URL"
+        else
+            echo "[plex] ERROR: Could not get download URL"
+        fi
+        ;;
+
+    *)
+        # Specific version requested
+        echo "[plex] Specific version requested: $VERSION"
+        # For specific versions, use direct download URL pattern
+        DOWNLOAD_URL="https://downloads.plex.tv/plex-media-server-new/${VERSION}/freebsd/PlexMediaServer-${VERSION}-FreeBSD-amd64.tar.bz2"
+        install_plex "$DOWNLOAD_URL"
+        ;;
+esac
+
+echo "[plex] Install/update complete"

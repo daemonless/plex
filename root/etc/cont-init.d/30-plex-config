@@ -1,7 +1,7 @@
 #!/bin/sh
-# Plex Media Server configuration initialization
+# Plex Media Server configuration
 
-echo "[plex] Setting up Plex Media Server"
+echo "[plex] Setting up configuration"
 
 # Create Application Support directory structure
 mkdir -p "/config/Library/Application Support/Plex Media Server"
@@ -23,6 +23,6 @@ EOF
 fi
 
 # Ensure correct ownership
-chown -R bsd:bsd /config /transcode /usr/local/share/plexmediaserver
+chown -R bsd:bsd /config /transcode /usr/local/share/plexmediaserver /app
 
 echo "[plex] Configuration complete"

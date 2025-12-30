@@ -2,7 +2,6 @@ ARG BASE_VERSION=15
 FROM ghcr.io/daemonless/base:${BASE_VERSION}
 
 ARG FREEBSD_ARCH=amd64
-ARG PLEX_CHANNEL=public
 
 LABEL org.opencontainers.image.title="Plex Media Server" \
     org.opencontainers.image.description="Plex Media Server on FreeBSD" \
@@ -18,20 +17,17 @@ LABEL org.opencontainers.image.title="Plex Media Server" \
     io.daemonless.upstream-mode="plex" \
     io.daemonless.upstream-url="https://plex.tv/api/downloads/5.json"
 
-# Download and install Plex Media Server
-# Channel: public or plexpass
-RUN PLEX_URL="https://plex.tv/downloads/latest/1?channel=${PLEX_CHANNEL}&build=freebsd-x86_64&distro=freebsd" && \
-    echo "Downloading Plex (channel=${PLEX_CHANNEL}) from: ${PLEX_URL}" && \
-    fetch -qo /tmp/plex.tar.bz2 "${PLEX_URL}" && \
-    mkdir -p /usr/local/share/plexmediaserver /app && \
-    tar -xf /tmp/plex.tar.bz2 -C /usr/local/share/plexmediaserver --strip-components=1 && \
-    rm /tmp/plex.tar.bz2 && \
-    "/usr/local/share/plexmediaserver/Plex Media Server" --version | tr -d 'v' > /app/version && \
-    chown -R bsd:bsd /usr/local/share/plexmediaserver /app
+# VERSION options:
+#   container - use version in container, no updates
+#   public    - public channel (default)
+#   latest    - alias for plexpass
+#   plexpass  - plexpass channel (requires PlexOnlineToken in Preferences.xml)
+#   x.y.z     - specific version number
+ENV VERSION="public"
 
-# Create directories matching official pms-docker
-RUN mkdir -p /config /transcode /data && \
-    chown -R bsd:bsd /config /transcode /data
+# Create directories
+RUN mkdir -p /config /transcode /data /app /usr/local/share/plexmediaserver && \
+    chown -R bsd:bsd /config /transcode /data /app /usr/local/share/plexmediaserver
 
 # Copy service definition and init scripts
 COPY root/ /
