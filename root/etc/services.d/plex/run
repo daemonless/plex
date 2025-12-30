@@ -1,0 +1,22 @@
+#!/bin/sh
+# Plex Media Server s6 service
+
+export HOME=/config
+export PLEX_MEDIA_SERVER_APPLICATION_SUPPORT_DIR="/config/Library/Application Support"
+export PLEX_MEDIA_SERVER_HOME=/usr/local/share/plexmediaserver
+export PLEX_MEDIA_SERVER_MAX_PLUGIN_PROCS=${PLEX_MEDIA_SERVER_MAX_PLUGIN_PROCS:-6}
+export PLEX_MEDIA_SERVER_INFO_VENDOR=FreeBSD
+export PLEX_MEDIA_SERVER_INFO_DEVICE=Podman
+export PLEX_MEDIA_SERVER_INFO_MODEL="$(uname -m)"
+export PLEX_MEDIA_SERVER_INFO_PLATFORM_VERSION="$(uname -r)"
+export TMPDIR=/transcode
+export LD_LIBRARY_PATH=/usr/local/share/plexmediaserver/lib
+export PATH="/usr/local/bin:/usr/bin:/bin"
+
+# Apply ADVERTISE_IP if set
+if [ -n "$ADVERTISE_IP" ]; then
+    export PLEX_MEDIA_SERVER_ADVERTISE_IP="$ADVERTISE_IP"
+fi
+
+cd /usr/local/share/plexmediaserver
+exec s6-setuidgid bsd "/usr/local/share/plexmediaserver/Plex Media Server"
