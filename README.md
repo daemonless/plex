@@ -1,22 +1,61 @@
 # Plex Media Server
 
-Plex Media Server on FreeBSD. Downloads Plex binary at runtime based on `VERSION` environment variable.
+[Plex](https://plex.tv) organizes video, music and photos from personal media libraries and streams them to smart TVs, streaming boxes and mobile devices.
 
-## Quick Start
+## Supported Architectures
+
+| Architecture | Available | Tag |
+|--------------|-----------|-----|
+| x86-64 | ✅ | `amd64` |
+
+## Version Tags
+
+| Tag | Description |
+|-----|-------------|
+| `latest` | Latest public Plex release baked at build time |
+| `x.y.z.build-hash` | Specific version (e.g., `1.42.2.10156-f737b826c`) |
+
+## Application Setup
+
+Access the web UI at `http://<your-ip>:32400/web` to configure Plex.
+
+### VERSION Environment Variable
+
+The `VERSION` parameter controls Plex update behavior:
+
+| Value | Description |
+|-------|-------------|
+| `container` | Use the version baked into the container, no updates (default) |
+| `public` | Update to latest public channel release |
+| `latest` | Alias for `plexpass` |
+| `plexpass` | Update to PlexPass channel (requires PlexOnlineToken in Preferences.xml) |
+| `<specific-version>` | Update to a specific version (e.g., `1.42.2.10156-f737b826c`) |
+
+**Note:** PlexPass versions require authentication. Log in via the web UI first, then restart the container with `VERSION=plexpass`.
+
+### Claiming Your Server
+
+To claim a new server, get a claim token from [plex.tv/claim](https://plex.tv/claim) (valid for 4 minutes) and pass it via `PLEX_CLAIM` environment variable on first run.
+
+## Usage
+
+### podman run
 
 ```bash
-podman run -d --name plex \
+podman run -d \
+  --name plex \
   -p 32400:32400 \
-  -e PUID=1000 -e PGID=1000 \
-  -e VERSION=public \
+  -e PUID=1000 \
+  -e PGID=1000 \
+  -e TZ=America/New_York \
+  -e VERSION=container \
   -v /path/to/config:/config \
   -v /path/to/media:/data \
+  -v /path/to/transcode:/transcode \
   ghcr.io/daemonless/plex:latest
 ```
 
-Access at: http://localhost:32400/web
-
-## podman-compose
+### podman-compose
 
 ```yaml
 services:
@@ -27,8 +66,8 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=America/New_York
-      - VERSION=public
-      # - PLEX_CLAIM=claim-xxxx  # Optional: from https://plex.tv/claim
+      - VERSION=container
+      # - PLEX_CLAIM=claim-xxxx
       # - ADVERTISE_IP=http://192.168.1.100:32400/
     volumes:
       - /data/config/plex:/config
@@ -46,36 +85,30 @@ services:
     restart: unless-stopped
 ```
 
-## Tags
+## Parameters
 
-| Tag | Description |
-|-----|-------------|
-| `:latest` | Runtime download, use `VERSION` env var to select channel |
+### Ports
 
-## Environment Variables
+| Port | Description |
+|------|-------------|
+| `32400` | Web UI and API |
+| `8324` | Companion app |
+| `32469` | DLNA |
+| `1900/udp` | SSDP discovery |
+| `32410-32414/udp` | GDM discovery |
+
+### Environment Variables
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `VERSION` | `public` | Plex version/channel (see below) |
-| `PLEX_CLAIM` | | Claim token from https://plex.tv/claim |
-| `ADVERTISE_IP` | | Override advertised IP address |
-| `PUID` | `1000` | User ID for app |
-| `PGID` | `1000` | Group ID for app |
+| `PUID` | `1000` | User ID |
+| `PGID` | `1000` | Group ID |
 | `TZ` | `UTC` | Timezone |
+| `VERSION` | `container` | Update behavior (see above) |
+| `PLEX_CLAIM` | | Claim token from plex.tv/claim |
+| `ADVERTISE_IP` | | Override advertised IP |
 
-### VERSION Options
-
-| Value | Description |
-|-------|-------------|
-| `container` | Use installed version, no updates |
-| `public` | Public channel (default) |
-| `latest` | Alias for `plexpass` |
-| `plexpass` | PlexPass channel (requires PlexOnlineToken) |
-| `x.y.z` | Specific version number |
-
-**Note:** PlexPass versions require authentication. Log in via the web UI first, then restart the container with `VERSION=plexpass`. The token is read from `Preferences.xml`.
-
-## Volumes
+### Volumes
 
 | Path | Description |
 |------|-------------|
@@ -83,29 +116,19 @@ services:
 | `/data` | Media library |
 | `/transcode` | Temporary transcoding directory |
 
-## Ports
+## User/Group Identifiers
 
-| Port | Protocol | Description |
-|------|----------|-------------|
-| 32400 | TCP | Web UI and API |
-| 8324 | TCP | Companion app |
-| 32469 | TCP | DLNA |
-| 1900 | UDP | SSDP discovery |
-| 32410-32414 | UDP | GDM discovery |
+Set `PUID` and `PGID` to match your host user to avoid permission issues:
 
-## Logging
+```bash
+id your_user
+```
 
-This image uses `s6-log` for internal log rotation.
-- **System Logs**: `/config/logs/daemonless/plex/`
-- **Application Logs**: `/config/Library/Application Support/Plex Media Server/Logs/`
-- **Podman Logs**: Output mirrored to console, `podman logs` works
+## Support Info
 
-## Notes
-
-- **User:** `bsd` (UID/GID set via PUID/PGID, default 1000)
-- **Healthcheck:** `--health-cmd /healthz`
-- **Base:** Built on `ghcr.io/daemonless/base` (FreeBSD)
-- **Runtime Download:** Plex binary downloaded on first start, not baked into image
+- Shell access: `podman exec -it plex /bin/sh`
+- Logs: `podman logs plex`
+- Container version: `podman inspect plex | grep org.opencontainers.image.version`
 
 ## Links
 

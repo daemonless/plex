@@ -18,16 +18,25 @@ LABEL org.opencontainers.image.title="Plex Media Server" \
     io.daemonless.upstream-url="https://plex.tv/api/downloads/5.json"
 
 # VERSION options:
-#   container - use version in container, no updates
-#   public    - public channel (default)
+#   container - use baked version, no updates (default)
+#   public    - update to latest public channel
 #   latest    - alias for plexpass
-#   plexpass  - plexpass channel (requires PlexOnlineToken in Preferences.xml)
-#   x.y.z     - specific version number
-ENV VERSION="public"
+#   plexpass  - update to plexpass channel (requires PlexOnlineToken)
+#   x.y.z     - update to specific version
+ENV VERSION="container"
 
 # Create directories
 RUN mkdir -p /config /transcode /data /app /usr/local/share/plexmediaserver && \
     chown -R bsd:bsd /config /transcode /data /app /usr/local/share/plexmediaserver
+
+# Download Plex at build time (public channel)
+RUN PLEX_URL="https://plex.tv/downloads/latest/1?channel=16&build=freebsd-x86_64&distro=freebsd" && \
+    echo "Downloading Plex from: ${PLEX_URL}" && \
+    fetch -qo /tmp/plex.tar.bz2 "${PLEX_URL}" && \
+    tar -xf /tmp/plex.tar.bz2 -C /usr/local/share/plexmediaserver --strip-components=1 && \
+    rm /tmp/plex.tar.bz2 && \
+    "/usr/local/share/plexmediaserver/Plex Media Server" --version | tr -d 'v' > /app/version && \
+    chown -R bsd:bsd /usr/local/share/plexmediaserver /app
 
 # Copy service definition and init scripts
 COPY root/ /
