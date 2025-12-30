@@ -23,10 +23,11 @@ LABEL org.opencontainers.image.title="Plex Media Server" \
 RUN PLEX_URL="https://plex.tv/downloads/latest/1?channel=${PLEX_CHANNEL}&build=freebsd-x86_64&distro=freebsd" && \
     echo "Downloading Plex (channel=${PLEX_CHANNEL}) from: ${PLEX_URL}" && \
     fetch -qo /tmp/plex.tar.bz2 "${PLEX_URL}" && \
-    mkdir -p /usr/local/share/plexmediaserver && \
+    mkdir -p /usr/local/share/plexmediaserver /app && \
     tar -xf /tmp/plex.tar.bz2 -C /usr/local/share/plexmediaserver --strip-components=1 && \
     rm /tmp/plex.tar.bz2 && \
-    chown -R bsd:bsd /usr/local/share/plexmediaserver
+    "/usr/local/share/plexmediaserver/Plex Media Server" --version | tr -d 'v' > /app/version && \
+    chown -R bsd:bsd /usr/local/share/plexmediaserver /app
 
 # Create directories matching official pms-docker
 RUN mkdir -p /config /transcode /data && \
