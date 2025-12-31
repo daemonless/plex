@@ -1,3 +1,0 @@
-#!/bin/sh
-# Health check for Plex Media Server
-fetch -qo /dev/null http://localhost:32400/identity

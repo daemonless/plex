@@ -4,6 +4,9 @@ FROM ghcr.io/daemonless/base:${BASE_VERSION}
 ARG FREEBSD_ARCH=amd64
 ARG UPSTREAM_URL="https://plex.tv/api/downloads/5.json"
 ARG UPSTREAM_JQ=".computer.FreeBSD.version"
+ARG HEALTHCHECK_ENDPOINT="http://localhost:32400/identity"
+
+ENV HEALTHCHECK_URL="${HEALTHCHECK_ENDPOINT}"
 
 LABEL org.opencontainers.image.title="Plex Media Server" \
     org.opencontainers.image.description="Plex Media Server on FreeBSD" \
@@ -17,7 +20,8 @@ LABEL org.opencontainers.image.title="Plex Media Server" \
     io.daemonless.arch="${FREEBSD_ARCH}" \
     io.daemonless.category="Media Servers" \
     io.daemonless.upstream-url="${UPSTREAM_URL}" \
-    io.daemonless.upstream-jq="${UPSTREAM_JQ}"
+    io.daemonless.upstream-jq="${UPSTREAM_JQ}" \
+    io.daemonless.healthcheck-url="${HEALTHCHECK_ENDPOINT}"
 
 # VERSION options:
 #   container - use baked version, no updates (default)
@@ -44,7 +48,7 @@ RUN PLEX_URL="https://plex.tv/downloads/latest/1?channel=16&build=freebsd-x86_64
 COPY root/ /
 
 # Make scripts executable
-RUN chmod +x /healthz /etc/services.d/plex/run /etc/services.d/plex/finish /etc/cont-init.d/* 2>/dev/null || true
+RUN chmod +x /etc/services.d/plex/run /etc/services.d/plex/finish /etc/cont-init.d/* 2>/dev/null || true
 
 # Plex ports (matching official pms-docker)
 EXPOSE 32400/tcp 8324/tcp 32469/tcp 1900/udp 32410/udp 32412/udp 32413/udp 32414/udp
