@@ -2,6 +2,8 @@ ARG BASE_VERSION=15
 FROM ghcr.io/daemonless/base:${BASE_VERSION}
 
 ARG FREEBSD_ARCH=amd64
+ARG UPSTREAM_URL="https://plex.tv/api/downloads/5.json"
+ARG UPSTREAM_SED="s/.*\"FreeBSD\":{[^}]*\"version\":\"\\([^\"]*\\)\".*/\\1/p"
 
 LABEL org.opencontainers.image.title="Plex Media Server" \
     org.opencontainers.image.description="Plex Media Server on FreeBSD" \
@@ -14,8 +16,8 @@ LABEL org.opencontainers.image.title="Plex Media Server" \
     io.daemonless.port="32400" \
     io.daemonless.arch="${FREEBSD_ARCH}" \
     io.daemonless.category="Media Servers" \
-    io.daemonless.upstream-mode="plex" \
-    io.daemonless.upstream-url="https://plex.tv/api/downloads/5.json"
+    io.daemonless.upstream-url="${UPSTREAM_URL}" \
+    io.daemonless.upstream-sed="${UPSTREAM_SED}"
 
 # VERSION options:
 #   container - use baked version, no updates (default)
