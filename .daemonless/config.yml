@@ -3,3 +3,4 @@ cit:
   mode: screenshot
   port: 32400
   health: /identity
+  screenshot: /web
