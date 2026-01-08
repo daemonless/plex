@@ -67,7 +67,7 @@ services:
       - TZ=America/New_York
       # - VERSION=public
       # - PLEX_CLAIM=claim-xxxx
-      # - ADVERTISE_IP=http://192.168.1.100:32400/
+      # - ADVERTISE_IP=http://<your-ip>:32400/
     volumes:
       - /data/config/plex:/config
       - /data/media:/data
