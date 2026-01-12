@@ -4,22 +4,33 @@ FROM ghcr.io/daemonless/base:${BASE_VERSION}
 ARG FREEBSD_ARCH=amd64
 ARG UPSTREAM_URL="https://plex.tv/api/downloads/5.json"
 ARG UPSTREAM_JQ=".computer.FreeBSD.version"
+{%- if ports %}
+ARG HEALTHCHECK_ENDPOINT="http://localhost:{{ ports[0].port }}/identity"
+{%- else %}
 ARG HEALTHCHECK_ENDPOINT="http://localhost:32400/identity"
+{%- endif %}
 
 ENV HEALTHCHECK_URL="${HEALTHCHECK_ENDPOINT}"
 
 # --- Metadata (Injected by Generator) ---
-LABEL org.opencontainers.image.title="Plex Media Server" \
-      org.opencontainers.image.description="Plex Media Server on FreeBSD." \
-      org.opencontainers.image.source="https://github.com/daemonless/plex" \
-      org.opencontainers.image.url="https://plex.tv/" \
+LABEL org.opencontainers.image.title="{{ title }}" \
+      org.opencontainers.image.description="{{ description }}" \
+      org.opencontainers.image.source="{{ repo_url }}" \
+      org.opencontainers.image.url="{{ web_url }}" \
       org.opencontainers.image.documentation="https://support.plex.tv/" \
       org.opencontainers.image.licenses="Proprietary" \
       org.opencontainers.image.vendor="daemonless" \
       org.opencontainers.image.authors="daemonless" \
-      io.daemonless.category="Media Servers" \
-      io.daemonless.port="32400" \
-      io.daemonless.volumes="/config,/transcode,/movies,/tv" \
+      io.daemonless.category="{{ category }}" \
+{%- if ports %}
+      io.daemonless.port="{{ ports[0].port }}" \
+{%- endif %}
+{%- if volumes %}
+      io.daemonless.volumes="{{ volumes | map(attribute='path') | join(',') }}" \
+{%- endif %}
+{%- if mlock %}
+      org.freebsd.jail.allow.mlock="required" \
+{%- endif %}
       io.daemonless.arch="${FREEBSD_ARCH}" \
       io.daemonless.upstream-url="${UPSTREAM_URL}" \
       io.daemonless.upstream-jq="${UPSTREAM_JQ}" \
@@ -53,7 +64,11 @@ COPY root/ /
 RUN chmod +x /etc/services.d/plex/run /etc/services.d/plex/finish /etc/cont-init.d/* 2>/dev/null || true
 
 # --- Expose (Injected by Generator) ---
-EXPOSE 32400 1900 32410 32412 32413 32414 32469 8324
+{%- if ports %}
+EXPOSE {{ ports | map(attribute='port') | join(' ') }}
+{%- endif %}
 
 # --- Volumes (Injected by Generator) ---
-VOLUME /config /transcode /movies /tv
+{%- if volumes %}
+VOLUME {{ volumes | map(attribute='path') | join(' ') }}
+{%- endif %}

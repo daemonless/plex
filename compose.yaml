@@ -1,0 +1,60 @@
+name: plex
+
+x-daemonless:
+  title: "Plex Media Server"
+  icon: ":simple-plex:"
+  category: "Media Servers"
+  description: "Plex Media Server on FreeBSD."
+  upstream_url: "https://github.com/daemonless/plex"
+  web_url: "https://plex.tv/"
+  freshports_url: "https://www.freshports.org/multimedia/plexmediaserver/"
+  user: "bsd"
+  mlock: false
+  
+  docs:
+    env:
+      PUID: "User ID for the application process"
+      PGID: "Group ID for the application process"
+      TZ: "Timezone for the container"
+      VERSION: "Plex update channel (container, public, plexpass)"
+      PLEX_CLAIM: "Optional: Claim token from https://plex.tv/claim"
+    volumes:
+      /config: "Configuration directory"
+      /transcode:
+        desc: "Transcode directory"
+        optional: true
+      /movies:
+        desc: "Movie library"
+      /tv:
+        desc: "TV series library"
+    ports:
+      32400: "Web UI"
+
+services:
+  plex:
+    image: ghcr.io/daemonless/plex:latest
+    container_name: plex
+    restart: unless-stopped
+    
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=UTC
+      - VERSION=container
+      - PLEX_CLAIM=
+
+    volumes:
+      - /path/to/containers/plex:/config
+      - /path/to/transcode:/transcode # optional
+      - /path/to/movies:/movies
+      - /path/to/tv:/tv
+
+    ports:
+      - 32400:32400
+      - 1900:1900/udp
+      - 32410:32410/udp
+      - 32412:32412/udp
+      - 32413:32413/udp
+      - 32414:32414/udp
+      - 32469:32469
+      - 8324:8324
