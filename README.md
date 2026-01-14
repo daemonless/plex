@@ -76,9 +76,9 @@ Access at: `http://localhost:32400`
     state: started
     restart_policy: always
     env:
-      PUID: "1000"
-      PGID: "1000"
-      TZ: "UTC"
+      PUID: "@PUID@"
+      PGID: "@PGID@"
+      TZ: "@TZ@"
       VERSION: "container"
       PLEX_CLAIM: ""
     ports:
@@ -98,7 +98,6 @@ Access at: `http://localhost:32400`
 ```
 
 ## Configuration
-
 ### Environment Variables
 
 | Variable | Default | Description |
@@ -108,7 +107,6 @@ Access at: `http://localhost:32400`
 | `TZ` | `UTC` | Timezone for the container |
 | `VERSION` | `container` | Plex update channel (container, public, plexpass) |
 | `PLEX_CLAIM` | `` | Optional: Claim token from https://plex.tv/claim |
-
 ### Volumes
 
 | Path | Description |
@@ -117,7 +115,6 @@ Access at: `http://localhost:32400`
 | `/transcode` | Transcode directory (Optional) |
 | `/movies` | Movie library |
 | `/tv` | TV series library |
-
 ### Ports
 
 | Port | Protocol | Description |
