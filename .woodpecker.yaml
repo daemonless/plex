@@ -8,8 +8,8 @@ steps:
       GITHUB_ACTOR:
         from_secret: GITHUB_USER
     commands:
-      - |        fetch -qo woodpecker-build.sh         "https://gitea.ahze.lan/ahze/daemonless/raw/branch/main/scripts/woodpecker-build.sh"
-        sh woodpecker-build.sh plex
+      - fetch -qo woodpecker-build.sh "https://gitea.ahze.lan/ahze/daemonless/raw/branch/main/scripts/woodpecker-build.sh"
+      - sh woodpecker-build.sh plex
 
 when:
   - event: push
