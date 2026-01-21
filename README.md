@@ -11,6 +11,7 @@ Plex Media Server on FreeBSD.
 |---|---|
 | **Port** | 32400 |
 | **Registry** | `ghcr.io/daemonless/plex` |
+| **Docs** | [daemonless.io/images/plex](https://daemonless.io/images/plex/) |
 | **Source** | [https://github.com/daemonless/plex](https://github.com/daemonless/plex) |
 | **Website** | [https://plex.tv/](https://plex.tv/) |
 
