@@ -1,11 +1,11 @@
 {
   "image": "plex",
-  "generated": "2026-02-01T21:02:54Z",
+  "generated": "2026-02-01T22:42:51Z",
   "tags": {
     "latest": {
       "app_version": "1.42.2.10156-f737b826c",
       "source": "upstream-binary",
-      "generated": "2026-02-01T21:02:39Z",
+      "generated": "2026-02-01T22:28:11Z",
       "packages": {
         "freebsd": [
           {
