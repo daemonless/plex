@@ -136,5 +136,6 @@ Access at: `http://localhost:32400`
 
 ## Notes
 
+- **Architectures:** amd64
 - **User:** `bsd` (UID/GID set via PUID/PGID)
 - **Base:** Built on `ghcr.io/daemonless/base` (FreeBSD)
