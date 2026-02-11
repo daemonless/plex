@@ -1,12 +1,12 @@
 {
   "image": "plex",
-  "generated": "2026-02-06T00:25:15Z",
+  "generated": "2026-02-11T20:09:04Z",
   "tags": {
     "latest": {
       "arch": "amd64",
-      "app_version": "1.42.2.10156-f737b826c",
+      "app_version": "1.43.0.10492-121068a07",
       "source": "upstream-binary",
-      "generated": "2026-02-06T00:07:46Z",
+      "generated": "2026-02-11T20:08:47Z",
       "packages": {
         "freebsd": [
           {
@@ -155,16 +155,24 @@
           }
         ],
         "dotnet": [],
-        "python": [],
+        "go": [],
+        "java": [],
         "node": [],
-        "go": []
+        "php": [],
+        "python": [],
+        "ruby": [],
+        "rust": []
       },
       "summary": {
         "freebsd": 36,
         "dotnet": 0,
-        "python": 0,
-        "node": 0,
         "go": 0,
+        "java": 0,
+        "node": 0,
+        "php": 0,
+        "python": 0,
+        "ruby": 0,
+        "rust": 0,
         "total": 36
       }
     }
