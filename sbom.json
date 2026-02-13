@@ -1,12 +1,12 @@
 {
   "image": "plex",
-  "generated": "2026-02-11T20:09:04Z",
+  "generated": "2026-02-13T13:21:29Z",
   "tags": {
     "latest": {
       "arch": "amd64",
       "app_version": "1.43.0.10492-121068a07",
-      "source": "upstream-binary",
-      "generated": "2026-02-11T20:08:47Z",
+      "source": "upstream",
+      "generated": "2026-02-13T13:21:12Z",
       "packages": {
         "freebsd": [
           {
@@ -15,7 +15,7 @@
           },
           {
             "name": "FreeBSD-blocklist",
-            "version": "15.0"
+            "version": "15.0p3"
           },
           {
             "name": "FreeBSD-bzip2-lib",
