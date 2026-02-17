@@ -1,12 +1,12 @@
 {
   "image": "plex",
-  "generated": "2026-02-16T18:16:36Z",
+  "generated": "2026-02-17T16:40:33Z",
   "tags": {
     "latest": {
       "arch": "amd64",
       "app_version": "1.43.0.10492-121068a07",
       "source": "upstream",
-      "generated": "2026-02-16T18:16:21Z",
+      "generated": "2026-02-17T16:40:15Z",
       "packages": {
         "freebsd": [
           {
