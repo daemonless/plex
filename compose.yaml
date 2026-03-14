@@ -7,7 +7,6 @@ x-daemonless:
   description: "Plex Media Server on FreeBSD."
   upstream_url: "https://github.com/daemonless/plex"
   web_url: "https://plex.tv/"
-  freshports_url: "https://www.freshports.org/multimedia/plexmediaserver/"
   user: "bsd"
   mlock: false
   
