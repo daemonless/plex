@@ -4,3 +4,4 @@ cit:
   port: 32400
   health: /identity
   screenshot: /web
+  ssim_threshold: 0.85
