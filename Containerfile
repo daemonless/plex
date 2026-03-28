@@ -16,7 +16,7 @@ ENV HEALTHCHECK_URL="${HEALTHCHECK_ENDPOINT}"
 
 # --- Metadata (Injected by Generator) ---
 LABEL org.opencontainers.image.title="Plex Media Server" \
-      org.opencontainers.image.description="Plex Media Server on FreeBSD." \
+      org.opencontainers.image.description="Personal media server that organizes and streams your movie, TV, and music collections to all your devices." \
       org.opencontainers.image.source="https://github.com/daemonless/plex" \
       org.opencontainers.image.url="https://plex.tv/" \
       org.opencontainers.image.documentation="https://support.plex.tv/" \

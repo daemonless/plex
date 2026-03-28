@@ -4,20 +4,20 @@ x-daemonless:
   title: "Plex Media Server"
   icon: ":simple-plex:"
   category: "Media Servers"
-  description: "Plex Media Server on FreeBSD."
+  description: "Personal media server that organizes and streams your movie, TV, and music collections to all your devices."
   upstream_url: "https://github.com/daemonless/plex"
   web_url: "https://plex.tv/"
   user: "bsd"
   mlock: false
-  appjail:
-  
+  appjail: true
+
   docs:
     env:
       PUID: "User ID for the application process"
       PGID: "Group ID for the application process"
       TZ: "Timezone for the container"
       VERSION: "Plex update channel (container, public, plexpass)"
-      PLEX_CLAIM: "Optional: Claim token from https://plex.tv/claim"
+      PLEX_CLAIM: "Optional: Claim token — get one at https://plex.tv/claim"
     volumes:
       /config: "Configuration directory"
       /transcode:

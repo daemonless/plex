@@ -8,7 +8,8 @@ Source: dbuild templates
 [![Build Status](https://img.shields.io/github/actions/workflow/status/daemonless/plex/build.yaml?style=flat-square&label=Build&color=green)](https://github.com/daemonless/plex/actions)
 [![Last Commit](https://img.shields.io/github/last-commit/daemonless/plex?style=flat-square&label=Last+Commit&color=blue)](https://github.com/daemonless/plex/commits)
 
-Plex Media Server on FreeBSD.
+Personal media server that organizes and streams your movie, TV, and music collections to all your devices.
+
 
 | | |
 |---|---|
@@ -84,6 +85,7 @@ services:
     options:
       - container: 'boot args:--pull'
     oci:
+      user: root
       environment:
         - PUID: !ENV '${PUID}'
         - PGID: !ENV '${PGID}'
@@ -182,7 +184,7 @@ Access at: `http://localhost:32400`
 | `PGID` | `1000` | Group ID for the application process |
 | `TZ` | `UTC` | Timezone for the container |
 | `VERSION` | `container` | Plex update channel (container, public, plexpass) |
-| `PLEX_CLAIM` | `` | Optional: Claim token from https://plex.tv/claim |
+| `PLEX_CLAIM` | `` | Optional: Claim token — get one at https://plex.tv/claim |
 
 ### Volumes
 
