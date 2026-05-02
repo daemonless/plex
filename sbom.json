@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-18T00:12:03Z",
+  "generated": "2026-05-02T12:50:17Z",
   "image": "plex",
   "tags": {
     "latest": {
       "app_version": "1.43.1.10611-1e34174b1",
       "arch": "amd64",
-      "generated": "2026-04-18T00:10:47Z",
+      "generated": "2026-05-02T12:48:58Z",
       "packages": {
         "dotnet": [],
         "freebsd": [
@@ -79,11 +79,11 @@
           },
           {
             "name": "FreeBSD-openssl",
-            "version": "15.0"
+            "version": "15.0p2"
           },
           {
             "name": "FreeBSD-openssl-lib",
-            "version": "15.0"
+            "version": "15.0p2"
           },
           {
             "name": "FreeBSD-pkg-bootstrap",
@@ -95,7 +95,7 @@
           },
           {
             "name": "FreeBSD-runtime",
-            "version": "15.0"
+            "version": "15.0p6"
           },
           {
             "name": "FreeBSD-tcpd",
