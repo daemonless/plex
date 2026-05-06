@@ -1,11 +1,11 @@
 {
-  "generated": "2026-05-02T12:50:17Z",
+  "generated": "2026-05-06T23:09:52Z",
   "image": "plex",
   "tags": {
     "latest": {
       "app_version": "1.43.1.10611-1e34174b1",
       "arch": "amd64",
-      "generated": "2026-05-02T12:48:58Z",
+      "generated": "2026-05-06T23:08:05Z",
       "packages": {
         "dotnet": [],
         "freebsd": [
@@ -95,7 +95,7 @@
           },
           {
             "name": "FreeBSD-runtime",
-            "version": "15.0p6"
+            "version": "15.0p8"
           },
           {
             "name": "FreeBSD-tcpd",
@@ -123,7 +123,7 @@
           },
           {
             "name": "FreeBSD-zoneinfo",
-            "version": "15.0"
+            "version": "15.0p7"
           },
           {
             "name": "ca_root_nss",
