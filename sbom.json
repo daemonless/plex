@@ -1,11 +1,11 @@
 {
-  "generated": "2026-05-15T23:18:09Z",
+  "generated": "2026-05-19T20:35:53Z",
   "image": "plex",
   "tags": {
     "latest": {
-      "app_version": "1.43.1.10611-1e34174b1",
+      "app_version": "1.43.2.10687-563d026ea",
       "arch": "amd64",
-      "generated": "2026-05-15T23:16:51Z",
+      "generated": "2026-05-19T20:34:33Z",
       "packages": {
         "dotnet": [],
         "freebsd": [
@@ -127,7 +127,7 @@
           },
           {
             "name": "ca_root_nss",
-            "version": "3.117_2"
+            "version": "3.123.1"
           },
           {
             "name": "execline",
