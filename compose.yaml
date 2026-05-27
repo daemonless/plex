@@ -30,12 +30,33 @@ x-daemonless:
     ports:
       32400: "Web UI"
 
+  notes: |
+    ## Host Networking
+
+    Plex requires `network_mode: host` on FreeBSD Podman. Bridge networking causes the Plex setup
+    wizard to reject all connections with "Not authorized" because it only allows access from
+    `127.0.0.1`, and bridge networking makes all connections appear to come from the gateway IP.
+
+    With host networking, ports are bound directly on the host — no `ports:` mapping needed.
+
+    ## Initial Setup
+
+    The Plex setup wizard must be accessed from `localhost`. After starting the container, create
+    an SSH tunnel from your local machine:
+
+    ```
+    ssh -L 32400:localhost:32400 <your-host>
+    ```
+
+    Then open `http://localhost:32400/web` in your browser to complete setup.
+
 services:
   plex:
     image: ghcr.io/daemonless/plex:latest
     container_name: plex
     restart: unless-stopped
-    
+    network_mode: host
+
     environment:
       - PUID=1000
       - PGID=1000
@@ -48,13 +69,3 @@ services:
       - /path/to/transcode:/transcode # optional
       - /path/to/movies:/movies
       - /path/to/tv:/tv
-
-    ports:
-      - 32400:32400
-      - 1900:1900/udp
-      - 32410:32410/udp
-      - 32412:32412/udp
-      - 32413:32413/udp
-      - 32414:32414/udp
-      - 32469:32469
-      - 8324:8324

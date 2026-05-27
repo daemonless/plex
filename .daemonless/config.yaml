@@ -3,5 +3,6 @@ cit:
   mode: screenshot
   port: 32400
   health: /identity
+  ready: "[plex] Plex is ready"
   screenshot: /web
   ssim_threshold: 0.85

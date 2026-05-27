@@ -10,10 +10,8 @@ Source: dbuild templates
 
 Personal media server that organizes and streams your movie, TV, and music collections to all your devices.
 
-
 | | |
 |---|---|
-| **Port** | 32400 |
 | **Registry** | `ghcr.io/daemonless/plex` |
 | **Source** | [https://github.com/daemonless/plex](https://github.com/daemonless/plex) |
 | **Website** | [https://plex.tv/](https://plex.tv/) |
@@ -48,15 +46,6 @@ services:
       - "/path/to/containers/plex/transcode:/transcode" # optional
       - "/path/to/movies:/movies"
       - "/path/to/tv:/tv"
-    ports:
-      - 32400:32400
-      - 1900:1900
-      - 32410:32410
-      - 32412:32412
-      - 32413:32413
-      - 32414:32414
-      - 32469:32469
-      - 8324:8324
     restart: unless-stopped
 ```
 
@@ -121,14 +110,6 @@ OPTION from=ghcr.io/daemonless/plex:${tag}
 
 ```bash
 podman run -d --name plex \
-  -p 32400:32400 \
-  -p 1900:1900 \
-  -p 32410:32410 \
-  -p 32412:32412 \
-  -p 32413:32413 \
-  -p 32414:32414 \
-  -p 32469:32469 \
-  -p 8324:8324 \
   -e PUID=1000 \
   -e PGID=1000 \
   -e TZ=UTC \
@@ -156,23 +137,12 @@ podman run -d --name plex \
       TZ: "UTC"
       VERSION: "container"
       PLEX_CLAIM: ""
-    ports:
-      - "32400:32400"
-      - "1900:1900"
-      - "32410:32410"
-      - "32412:32412"
-      - "32413:32413"
-      - "32414:32414"
-      - "32469:32469"
-      - "8324:8324"
     volumes:
       - "/path/to/containers/plex:/config"
       - "/path/to/containers/plex/transcode:/transcode" # optional
       - "/path/to/movies:/movies"
       - "/path/to/tv:/tv"
 ```
-
-Access at: `http://localhost:32400`
 
 ## Parameters
 
@@ -195,18 +165,25 @@ Access at: `http://localhost:32400`
 | `/movies` | Movie library |
 | `/tv` | TV series library |
 
-### Ports
+## Host Networking
 
-| Port | Protocol | Description |
-|------|----------|-------------|
-| `32400` | TCP | Web UI |
-| `1900` | UDP |  |
-| `32410` | UDP |  |
-| `32412` | UDP |  |
-| `32413` | UDP |  |
-| `32414` | UDP |  |
-| `32469` | TCP |  |
-| `8324` | TCP |  |
+Plex requires `network_mode: host` on FreeBSD Podman. Bridge networking causes the Plex setup
+wizard to reject all connections with "Not authorized" because it only allows access from
+`127.0.0.1`, and bridge networking makes all connections appear to come from the gateway IP.
+
+With host networking, ports are bound directly on the host — no `ports:` mapping needed.
+
+## Initial Setup
+
+The Plex setup wizard must be accessed from `localhost`. After starting the container, create
+an SSH tunnel from your local machine:
+
+```
+ssh -L 32400:localhost:32400 <your-host>
+```
+
+Then open `http://localhost:32400/web` in your browser to complete setup.
+
 
 **Architectures:** amd64
 **User:** `bsd` (UID/GID via PUID/PGID, defaults to 1000:1000)
