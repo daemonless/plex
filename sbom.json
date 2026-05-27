@@ -1,11 +1,11 @@
 {
-  "generated": "2026-05-19T20:35:53Z",
+  "generated": "2026-05-27T23:04:49Z",
   "image": "plex",
   "tags": {
     "latest": {
       "app_version": "1.43.2.10687-563d026ea",
       "arch": "amd64",
-      "generated": "2026-05-19T20:34:33Z",
+      "generated": "2026-05-27T23:03:31Z",
       "packages": {
         "dotnet": [],
         "freebsd": [
@@ -51,7 +51,7 @@
           },
           {
             "name": "FreeBSD-libcasper",
-            "version": "15.0"
+            "version": "15.0p9"
           },
           {
             "name": "FreeBSD-libexecinfo",
@@ -95,7 +95,7 @@
           },
           {
             "name": "FreeBSD-runtime",
-            "version": "15.0p8"
+            "version": "15.0p9"
           },
           {
             "name": "FreeBSD-tcpd",
@@ -107,7 +107,7 @@
           },
           {
             "name": "FreeBSD-utilities",
-            "version": "15.0p1"
+            "version": "15.0p9"
           },
           {
             "name": "FreeBSD-xz-lib",
@@ -127,7 +127,7 @@
           },
           {
             "name": "ca_root_nss",
-            "version": "3.123.1"
+            "version": "3.124"
           },
           {
             "name": "execline",
