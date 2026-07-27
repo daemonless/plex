@@ -1,11 +1,11 @@
 {
-  "generated": "2026-07-14T18:31:47Z",
+  "generated": "2026-07-27T22:08:18Z",
   "image": "plex",
   "tags": {
     "latest": {
       "app_version": "1.43.3.10828-00f62d37d",
       "arch": "amd64",
-      "generated": "2026-07-14T18:30:33Z",
+      "generated": "2026-07-27T22:04:41Z",
       "packages": {
         "dotnet": [],
         "freebsd": [
@@ -67,6 +67,10 @@
           },
           {
             "name": "FreeBSD-libucl",
+            "version": "15.0"
+          },
+          {
+            "name": "FreeBSD-locales",
             "version": "15.0"
           },
           {
@@ -165,7 +169,7 @@
       "source": "upstream",
       "summary": {
         "dotnet": 0,
-        "freebsd": 36,
+        "freebsd": 37,
         "go": 0,
         "java": 0,
         "node": 0,
@@ -173,7 +177,7 @@
         "python": 0,
         "ruby": 0,
         "rust": 0,
-        "total": 36
+        "total": 37
       }
     }
   }
