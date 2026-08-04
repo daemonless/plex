@@ -17,13 +17,11 @@ Personal media server that organizes and streams your movie, TV, and music colle
 | **Website** | [https://plex.tv/](https://plex.tv/) |
 
 ## Version Tags
-
 | Tag | Description | Best For |
 | :--- | :--- | :--- |
 | `latest` | **Upstream Binary**. Built from official release. | Most users. Matches Linux Docker behavior. |
 
 ## Prerequisites
-
 Before deploying, ensure your host environment is ready. See the [Quick Start Guide](https://daemonless.io/guides/quick-start) for host setup instructions.
 
 ## Deployment
@@ -33,14 +31,14 @@ Before deploying, ensure your host environment is ready. See the [Quick Start Gu
 ```yaml
 services:
   plex:
-    image: ghcr.io/daemonless/plex:latest
+    image: "ghcr.io/daemonless/plex:latest"
     container_name: plex
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=UTC
-      - VERSION=container
-      - PLEX_CLAIM=
+      - PUID=1000  # User ID for the application process
+      - PGID=1000  # Group ID for the application process
+      - TZ=UTC  # Timezone for the container
+      - VERSION=container  # Plex update channel (container, public, plexpass)
+      - PLEX_CLAIM=  # Optional: Claim token — get one at https://plex.tv/claim
     volumes:
       - "/path/to/containers/plex:/config"
       - "/path/to/containers/plex/transcode:/transcode" # optional
@@ -50,10 +48,11 @@ services:
 ```
 
 ### AppJail Director
-
 **.env**:
 
 ```
+# .env
+
 DIRECTOR_PROJECT=plex
 PUID=1000
 PGID=1000
@@ -65,6 +64,8 @@ PLEX_CLAIM=
 **appjail-director.yml**:
 
 ```yaml
+# appjail-director.yml
+
 options:
   - virtualnet: ':<random> default'
   - nat:
@@ -100,6 +101,8 @@ volumes:
 **Makejail**:
 
 ```
+# Makejail
+
 ARG tag=latest
 
 OPTION overwrite=force
@@ -122,13 +125,33 @@ podman run -d --name plex \
   ghcr.io/daemonless/plex:latest
 ```
 
+### AppJail
+
+```bash
+appjail oci run -Pd \
+  -o overwrite=force \
+  -o container="args:--pull" \
+  -o virtualnet=":<random> default" \
+  -o nat \
+  -e PUID=1000 \
+  -e PGID=1000 \
+  -e TZ=UTC \
+  -e VERSION=container \
+  -e PLEX_CLAIM= \
+  -o fstab="/path/to/containers/plex /config <pseudofs>" \
+  -o fstab="/path/to/containers/plex/transcode /transcode <pseudofs>" \ # optional
+  -o fstab="/path/to/movies /movies <pseudofs>" \
+  -o fstab="/path/to/tv /tv <pseudofs>" \
+  ghcr.io/daemonless/plex:latest plex
+```
+
 ### Ansible
 
 ```yaml
 - name: Deploy plex
   containers.podman.podman_container:
     name: plex
-    image: ghcr.io/daemonless/plex:latest
+    image: "ghcr.io/daemonless/plex:latest"
     state: started
     restart_policy: always
     env:
@@ -187,7 +210,7 @@ Then open `http://localhost:32400/web` in your browser to complete setup.
 
 **Architectures:** amd64
 **User:** `bsd` (UID/GID via PUID/PGID, defaults to 1000:1000)
-**Base:** FreeBSD 15.0
+**Base:** FreeBSD 15
 
 ---
 
