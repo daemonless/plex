@@ -19,7 +19,7 @@ Personal media server that organizes and streams your movie, TV, and music colle
 ## Version Tags
 | Tag | Description | Best For |
 | :--- | :--- | :--- |
-| `latest` | **Upstream Binary**. Built from official release. | Most users. Matches Linux Docker behavior. |
+| `latest` | **Upstream Binary**. Built from official release. | Most users — recommended. |
 
 ## Prerequisites
 Before deploying, ensure your host environment is ready. See the [Quick Start Guide](https://daemonless.io/guides/quick-start) for host setup instructions.
