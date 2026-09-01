@@ -44,8 +44,11 @@ services:
       - "/path/to/containers/plex/transcode:/transcode" # optional
       - "/path/to/movies:/movies"
       - "/path/to/tv:/tv"
-    restart: unless-stopped
+    # always (not unless-stopped) so FreeBSD's podman rc.d auto-starts it at boot
+    restart: always
 ```
+
+Save as `compose.yaml`, then run `podman-compose up -d`.
 
 ### AppJail Director
 **.env**:
@@ -109,6 +112,8 @@ OPTION overwrite=force
 OPTION from=ghcr.io/daemonless/plex:${tag}
 ```
 
+Save the files above, then run `appjail-director up`.
+
 ### Podman CLI
 
 ```bash
@@ -124,6 +129,8 @@ podman run -d --name plex \
   -v /path/to/tv:/tv \
   ghcr.io/daemonless/plex:latest
 ```
+
+Save as `run.sh`, then run `sh run.sh`.
 
 ### AppJail
 
@@ -143,6 +150,40 @@ appjail oci run -Pd \
   -o fstab="/path/to/movies /movies <pseudofs>" \
   -o fstab="/path/to/tv /tv <pseudofs>" \
   ghcr.io/daemonless/plex:latest plex
+```
+
+Save as `run.sh`, then run `sh run.sh`.
+
+### Bastille
+
+> [!WARNING]
+> Bastille's OCI support is **experimental**. It requires `buildah`, shares the host network stack (`inherit`), and persists image-declared volumes under `--data-path`.
+
+```yaml
+services:
+  plex:
+    image: "ghcr.io/daemonless/plex:latest"
+    container_name: plex
+    network_mode: host  # jail shares host networking
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=UTC
+      - VERSION=container
+      - PLEX_CLAIM=
+```
+
+Save as `podman-compose.yml`, then run `bastille up`. Or via CLI:
+
+```bash
+bastille create -O \
+  --env PUID=1000 \
+  --env PGID=1000 \
+  --env TZ=UTC \
+  --env VERSION=container \
+  --env PLEX_CLAIM= \
+  --data-path /path/to/containers/plex \
+  plex ghcr.io/daemonless/plex:latest inherit
 ```
 
 ### Ansible
@@ -166,6 +207,8 @@ appjail oci run -Pd \
       - "/path/to/movies:/movies"
       - "/path/to/tv:/tv"
 ```
+
+Save as `plex-deploy.yaml`, then run `ansible-playbook plex-deploy.yaml`.
 
 ## Parameters
 
