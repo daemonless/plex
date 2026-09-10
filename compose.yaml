@@ -20,6 +20,7 @@ x-daemonless:
       PLEX_CLAIM:
         desc: "Claim token — get one at https://plex.tv/claim"
         optional: true
+        level: primary
     volumes:
       /config: "Configuration directory"
       /transcode:
