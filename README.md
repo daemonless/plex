@@ -38,7 +38,7 @@ services:
       - PGID=1000  # Group ID for the application process
       - TZ=UTC  # Timezone for the container
       - VERSION=container  # Plex update channel (container, public, plexpass)
-      - PLEX_CLAIM=  # Optional: Claim token — get one at https://plex.tv/claim
+      - PLEX_CLAIM=  # Claim token — get one at https://plex.tv/claim
     volumes:
       - "/path/to/containers/plex:/config"
       - "/path/to/containers/plex/transcode:/transcode" # optional
@@ -235,7 +235,7 @@ Save as `plex-deploy.yaml`, then run `ansible-playbook plex-deploy.yaml`.
 | `PGID` | `1000` | Group ID for the application process |
 | `TZ` | `UTC` | Timezone for the container |
 | `VERSION` | `container` | Plex update channel (container, public, plexpass) |
-| `PLEX_CLAIM` | `` | Optional: Claim token — get one at https://plex.tv/claim |
+| `PLEX_CLAIM` | `` | Claim token — get one at https://plex.tv/claim |
 
 ### Volumes
 

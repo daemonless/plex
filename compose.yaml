@@ -17,7 +17,9 @@ x-daemonless:
       PGID: "Group ID for the application process"
       TZ: "Timezone for the container"
       VERSION: "Plex update channel (container, public, plexpass)"
-      PLEX_CLAIM: "Optional: Claim token — get one at https://plex.tv/claim"
+      PLEX_CLAIM:
+        desc: "Claim token — get one at https://plex.tv/claim"
+        optional: true
     volumes:
       /config: "Configuration directory"
       /transcode:
