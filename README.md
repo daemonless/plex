@@ -76,7 +76,7 @@ services:
   plex:
     name: plex
     options:
-      - container: 'boot args:--pull'
+      - container: 'args:--pull'
     oci:
       user: root
       environment:
@@ -108,11 +108,14 @@ volumes:
 
 ARG tag=latest
 
+OPTION container=boot
 OPTION overwrite=force
 OPTION from=ghcr.io/daemonless/plex:${tag}
 ```
 
 Save the files above, then run `appjail-director up`.
+
+
 
 ### Podman CLI
 
@@ -134,6 +137,7 @@ Save as `run.sh`, then run `sh run.sh`.
 
 ### AppJail
 
+
 ```bash
 appjail oci run -Pd \
   -o overwrite=force \
@@ -152,28 +156,36 @@ appjail oci run -Pd \
   ghcr.io/daemonless/plex:latest plex
 ```
 
-Save as `run.sh`, then run `sh run.sh`.
+Save the files above, then run `sh run.sh`.
+
+
 
 ### Bastille
 
 > [!WARNING]
-> Bastille's OCI support is **experimental**. It requires `buildah`, shares the host network stack (`inherit`), and persists image-declared volumes under `--data-path`.
+> Bastille's OCI support is **experimental**. It requires `buildah` and shares the host network stack (`inherit`). Mount volumes with `--volume HOST JAIL`; without it, image-declared volumes are stored under `${bastille_volumesdir}/${jail}`.
 
 ```yaml
 services:
   plex:
+    name: plex
     image: "ghcr.io/daemonless/plex:latest"
-    container_name: plex
-    network_mode: host  # jail shares host networking
+    network:
+      - mode: host
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=UTC
       - VERSION=container
       - PLEX_CLAIM=
+    volumes:
+      - "/path/to/containers/plex:/config"
+      - "/path/to/containers/plex/transcode:/transcode"
+      - "/path/to/movies:/movies"
+      - "/path/to/tv:/tv"
 ```
 
-Save as `podman-compose.yml`, then run `bastille up`. Or via CLI:
+Save as `bastille-compose.yml`, then run `bastille up`. Or via CLI:
 
 ```bash
 bastille create -O \
@@ -182,7 +194,10 @@ bastille create -O \
   --env TZ=UTC \
   --env VERSION=container \
   --env PLEX_CLAIM= \
-  --data-path /path/to/containers/plex \
+  --volume /path/to/containers/plex /config \
+  --volume /path/to/containers/plex/transcode /transcode \
+  --volume /path/to/movies /movies \
+  --volume /path/to/tv /tv \
   plex ghcr.io/daemonless/plex:latest inherit
 ```
 
