@@ -7,6 +7,7 @@ Source: dbuild templates
 
 [![Build Status](https://img.shields.io/github/actions/workflow/status/daemonless/plex/build.yaml?style=flat-square&label=Build&color=green)](https://github.com/daemonless/plex/actions)
 [![Last Commit](https://img.shields.io/github/last-commit/daemonless/plex?style=flat-square&label=Last+Commit&color=blue)](https://github.com/daemonless/plex/commits)
+[![OCI Pulls](https://img.shields.io/docker/pulls/daemonless/plex?style=flat-square&label=OCI+Pulls&color=blue)](https://hub.docker.com/r/daemonless/plex)
 
 Personal media server that organizes and streams your movie, TV, and music collections to all your devices.
 

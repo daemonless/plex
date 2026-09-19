@@ -1,11 +1,11 @@
 {
-  "generated": "2026-09-10T21:33:46Z",
+  "generated": "2026-09-19T10:32:15Z",
   "image": "plex",
   "tags": {
     "latest": {
       "app_version": "1.43.4.10903-e5521bd8c",
       "arch": "amd64",
-      "generated": "2026-09-10T21:32:55Z",
+      "generated": "2026-09-19T10:31:23Z",
       "packages": {
         "dotnet": [],
         "freebsd": [
@@ -49,6 +49,13 @@
               "CDDL-1.0"
             ],
             "name": "FreeBSD-ctf-lib",
+            "version": "15.1"
+          },
+          {
+            "licenses": [
+              "BSD-3-Clause"
+            ],
+            "name": "FreeBSD-dhclient",
             "version": "15.1"
           },
           {
@@ -174,6 +181,13 @@
             "licenses": [
               "BSD2CLAUSE"
             ],
+            "name": "FreeBSD-resolvconf",
+            "version": "15.1"
+          },
+          {
+            "licenses": [
+              "BSD2CLAUSE"
+            ],
             "name": "FreeBSD-runtime",
             "version": "15.1p3"
           },
@@ -238,7 +252,7 @@
               "MPL20"
             ],
             "name": "ca_root_nss",
-            "version": "3.127"
+            "version": "3.129"
           },
           {
             "licenses": [
@@ -294,7 +308,7 @@
       "source": "upstream",
       "summary": {
         "dotnet": 0,
-        "freebsd": 39,
+        "freebsd": 41,
         "go": 0,
         "java": 0,
         "node": 0,
@@ -302,7 +316,7 @@
         "python": 0,
         "ruby": 0,
         "rust": 0,
-        "total": 39
+        "total": 41
       }
     }
   }
