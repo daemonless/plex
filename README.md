@@ -44,8 +44,8 @@ services:
       - ADVERTISE_IP=  # URLs clients should use to reach the server, comma-separated, e.g. http://192.168.1.10:32400 (bridge networking)
       - ALLOWED_NETWORKS=  # Networks allowed in without signing in, comma-separated, e.g. 192.168.1.0/24
     volumes:
-      - "/containers/plex:/config"
-      - "/containers/plex/transcode:/transcode" # optional
+      - "/path/to/containers/plex:/config"
+      - "/path/to/containers/plex/transcode:/transcode" # optional
       - "/path/to/movies:/movies"
       - "/path/to/tv:/tv"
     ports:
@@ -103,9 +103,9 @@ services:
       - tv: /tv
 volumes:
   plex:
-    device: '/containers/plex'
+    device: '/path/to/containers/plex'
   plex_transcode:
-    device: '/containers/plex/transcode'
+    device: '/path/to/containers/plex/transcode'
   movies:
     device: 'movies'
   tv:
@@ -144,8 +144,8 @@ podman run -d --name plex \
   -e PLEX_CLAIM= \
   -e ADVERTISE_IP= \
   -e ALLOWED_NETWORKS= \
-  -v /containers/plex:/config \
-  -v /containers/plex/transcode:/transcode # optional \
+  -v /path/to/containers/plex:/config \
+  -v /path/to/containers/plex/transcode:/transcode # optional \
   -v /path/to/movies:/movies \
   -v /path/to/tv:/tv \
   ghcr.io/daemonless/plex:latest
@@ -170,8 +170,8 @@ appjail oci run -Pd \
   -e PLEX_CLAIM= \
   -e ADVERTISE_IP= \
   -e ALLOWED_NETWORKS= \
-  -o fstab="/containers/plex /config <pseudofs>" \
-  -o fstab="/containers/plex/transcode /transcode <pseudofs>" \ # optional
+  -o fstab="/path/to/containers/plex /config <pseudofs>" \
+  -o fstab="/path/to/containers/plex/transcode /transcode <pseudofs>" \ # optional
   -o fstab="/path/to/movies /movies <pseudofs>" \
   -o fstab="/path/to/tv /tv <pseudofs>" \
   ghcr.io/daemonless/plex:latest plex
@@ -206,8 +206,8 @@ services:
       - ADVERTISE_IP=
       - ALLOWED_NETWORKS=
     volumes:
-      - "/containers/plex:/config"
-      - "/containers/plex/transcode:/transcode"
+      - "/path/to/containers/plex:/config"
+      - "/path/to/containers/plex/transcode:/transcode"
       - "/path/to/movies:/movies"
       - "/path/to/tv:/tv"
 ```
@@ -223,8 +223,8 @@ bastille create -O \
   --env PLEX_CLAIM= \
   --env ADVERTISE_IP= \
   --env ALLOWED_NETWORKS= \
-  --volume /containers/plex /config \
-  --volume /containers/plex/transcode /transcode \
+  --volume /path/to/containers/plex /config \
+  --volume /path/to/containers/plex/transcode /transcode \
   --volume /path/to/movies /movies \
   --volume /path/to/tv /tv \
   plex ghcr.io/daemonless/plex:latest inherit
@@ -250,8 +250,8 @@ bastille create -O \
     ports:
       - "32400:32400"
     volumes:
-      - "/containers/plex:/config"
-      - "/containers/plex/transcode:/transcode" # optional
+      - "/path/to/containers/plex:/config"
+      - "/path/to/containers/plex/transcode:/transcode" # optional
       - "/path/to/movies:/movies"
       - "/path/to/tv:/tv"
 ```

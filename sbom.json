@@ -1,11 +1,11 @@
 {
-  "generated": "2026-09-22T23:39:23Z",
+  "generated": "2026-09-29T14:38:03Z",
   "image": "plex",
   "tags": {
     "latest": {
       "app_version": "1.43.4.10903-e5521bd8c",
       "arch": "amd64",
-      "generated": "2026-09-22T23:38:27Z",
+      "generated": "2026-09-29T14:37:28Z",
       "packages": {
         "dotnet": [],
         "freebsd": [
