@@ -9,6 +9,34 @@ echo "[plex] Setting up configuration"
 mkdir -p "/config/Library/Application Support/Plex Media Server"
 mkdir -p /transcode
 
+# Empty shell on first run so settings below can land before Plex starts
+# (as upstream pms-docker does); Plex fills in the rest itself.
+if [ ! -e "$PREF_FILE" ]; then
+    printf '<?xml version="1.0" encoding="utf-8"?>\n<Preferences/>\n' > "$PREF_FILE"
+fi
+
+# set_pref KEY VALUE: set an attribute on <Preferences>, replacing any old
+# value. Plex keeps the whole element on one line, so sed is enough (no
+# xmlstarlet in the image).
+set_pref() {
+    val=$(printf '%s' "$2" | sed -e 's/&/\&amp;/g' -e 's/"/\&quot;/g' -e 's/[|&\\]/\\&/g')
+    if grep -q " $1=\"" "$PREF_FILE"; then
+        sed -i '' -E "s|( $1=\")[^\"]*\"|\\1${val}\"|" "$PREF_FILE"
+    else
+        sed -i '' "s|<Preferences|<Preferences $1=\"${val}\"|" "$PREF_FILE"
+    fi
+}
+
+# Same variables and settings as upstream pms-docker
+if [ -n "$ADVERTISE_IP" ]; then
+    echo "[plex] Advertising ${ADVERTISE_IP}"
+    set_pref customConnections "$ADVERTISE_IP"
+fi
+if [ -n "$ALLOWED_NETWORKS" ]; then
+    echo "[plex] Allowing unauthenticated access from ${ALLOWED_NETWORKS}"
+    set_pref allowedNetworks "$ALLOWED_NETWORKS"
+fi
+
 # Ensure correct ownership
 chown -R bsd:bsd /config /transcode /usr/local/share/plexmediaserver /app
 

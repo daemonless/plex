@@ -24,6 +24,7 @@ LABEL org.opencontainers.image.title="Plex Media Server" \
       org.opencontainers.image.vendor="daemonless" \
       org.opencontainers.image.authors="daemonless" \
       io.daemonless.category="Media Servers" \
+      io.daemonless.port="32400" \
       io.daemonless.volumes="/config,/transcode,/movies,/tv" \
       io.daemonless.arch="${FREEBSD_ARCH}" \
       io.daemonless.upstream-url="${UPSTREAM_URL}" \
@@ -58,6 +59,7 @@ COPY root/ /
 RUN chmod +x /etc/services.d/plex/run /etc/services.d/plex/finish /etc/cont-init.d/* 2>/dev/null || true
 
 # --- Expose (Injected by Generator) ---
+EXPOSE 32400
 
 # --- Volumes (Injected by Generator) ---
 VOLUME /config /transcode /movies /tv

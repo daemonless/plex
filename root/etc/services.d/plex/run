@@ -13,11 +13,6 @@ export TMPDIR=/transcode
 export LD_LIBRARY_PATH=/usr/local/share/plexmediaserver/lib
 export PATH="/usr/local/bin:/usr/bin:/bin"
 
-# Apply ADVERTISE_IP if set
-if [ -n "$ADVERTISE_IP" ]; then
-    export PLEX_MEDIA_SERVER_ADVERTISE_IP="$ADVERTISE_IP"
-fi
-
 # Background claim task - waits for Plex to start, then claims
 if [ -f /tmp/plex_claim_token ]; then
     (
@@ -27,12 +22,20 @@ if [ -f /tmp/plex_claim_token ]; then
         for i in $(seq 1 60); do
             if fetch -qo /dev/null http://127.0.0.1:32400/identity 2>/dev/null; then
                 echo "[plex] Plex is ready, claiming server..."
-                RESPONSE=$(fetch -qo - "http://127.0.0.1:32400/myplex/claim?token=${CLAIM_TOKEN}" 2>&1)
-                if echo "$RESPONSE" | grep -q "error"; then
-                    echo "[plex] Claim failed: $RESPONSE"
-                else
-                    echo "[plex] Server claimed successfully!"
-                fi
+                # The claim must be a POST from 127.0.0.1 (anything else is
+                # 401), and fetch(1) can only GET -- raw HTTP over nc instead.
+                # /identity answers while Plex is still starting plugins, so
+                # an early claim can be refused: retry for ~30s.
+                for try in $(seq 1 10); do
+                    STATUS=$(printf 'POST /myplex/claim?token=%s HTTP/1.1\r\nHost: 127.0.0.1:32400\r\nContent-Length: 0\r\nConnection: close\r\n\r\n' "$CLAIM_TOKEN" \
+                        | nc -w 15 127.0.0.1 32400 2>&1 | head -1 | tr -d '\r')
+                    case "$STATUS" in "HTTP/1.1 200"*) break ;; esac
+                    sleep 3
+                done
+                case "$STATUS" in
+                    "HTTP/1.1 200"*) echo "[plex] Server claimed successfully!" ;;
+                    *) echo "[plex] Claim failed (${STATUS:-no response}); tokens expire 4 minutes after https://plex.tv/claim" ;;
+                esac
                 rm -f /tmp/plex_claim_token
                 break
             fi

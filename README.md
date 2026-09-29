@@ -13,6 +13,7 @@ Personal media server that organizes and streams your movie, TV, and music colle
 
 | | |
 |---|---|
+| **Port** | 32400 |
 | **Registry** | `ghcr.io/daemonless/plex` |
 | **Source** | [https://github.com/daemonless/plex](https://github.com/daemonless/plex) |
 | **Website** | [https://plex.tv/](https://plex.tv/) |
@@ -40,11 +41,15 @@ services:
       - TZ=UTC  # Timezone for the container
       - VERSION=container  # Plex update channel (container, public, plexpass)
       - PLEX_CLAIM=  # Claim token — get one at https://plex.tv/claim
+      - ADVERTISE_IP=  # URLs clients should use to reach the server, comma-separated, e.g. http://192.168.1.10:32400 (bridge networking)
+      - ALLOWED_NETWORKS=  # Networks allowed in without signing in, comma-separated, e.g. 192.168.1.0/24
     volumes:
-      - "/path/to/containers/plex:/config"
-      - "/path/to/containers/plex/transcode:/transcode" # optional
+      - "/containers/plex:/config"
+      - "/containers/plex/transcode:/transcode" # optional
       - "/path/to/movies:/movies"
       - "/path/to/tv:/tv"
+    ports:
+      - "32400:32400"
     # always (not unless-stopped) so FreeBSD's podman rc.d auto-starts it at boot
     restart: always
 ```
@@ -63,6 +68,8 @@ PGID=1000
 TZ=UTC
 VERSION=container
 PLEX_CLAIM=
+ADVERTISE_IP=
+ALLOWED_NETWORKS=
 ```
 
 **appjail-director.yml**:
@@ -78,6 +85,7 @@ services:
     name: plex
     options:
       - container: 'args:--pull'
+      - expose: '32400:32400 proto:tcp'
     oci:
       user: root
       environment:
@@ -86,6 +94,8 @@ services:
         - TZ: !ENV '${TZ}'
         - VERSION: !ENV '${VERSION}'
         - PLEX_CLAIM: !ENV '${PLEX_CLAIM}'
+        - ADVERTISE_IP: !ENV '${ADVERTISE_IP}'
+        - ALLOWED_NETWORKS: !ENV '${ALLOWED_NETWORKS}'
     volumes:
       - plex: /config
       - plex_transcode: /transcode
@@ -93,9 +103,9 @@ services:
       - tv: /tv
 volumes:
   plex:
-    device: '/path/to/containers/plex'
+    device: '/containers/plex'
   plex_transcode:
-    device: '/path/to/containers/plex/transcode'
+    device: '/containers/plex/transcode'
   movies:
     device: 'movies'
   tv:
@@ -117,18 +127,25 @@ OPTION from=ghcr.io/daemonless/plex:${tag}
 Save the files above, then run `appjail-director up`.
 
 
+> [!WARNING]
+> Exposing ports in AppJail means that your service can be reached from remote hosts. If that is not your intention, do not expose the ports and communicate with the service using the jail's IPv4 address or hostname assigned by the virtual network.
+>
+> To avoid exposing ports, just remove the `expose` option in your `appjail-director.yml` or from your command-line arguments.
 
 ### Podman CLI
 
 ```bash
 podman run -d --name plex \
+  -p 32400:32400 \
   -e PUID=1000 \
   -e PGID=1000 \
   -e TZ=UTC \
   -e VERSION=container \
   -e PLEX_CLAIM= \
-  -v /path/to/containers/plex:/config \
-  -v /path/to/containers/plex/transcode:/transcode # optional \
+  -e ADVERTISE_IP= \
+  -e ALLOWED_NETWORKS= \
+  -v /containers/plex:/config \
+  -v /containers/plex/transcode:/transcode # optional \
   -v /path/to/movies:/movies \
   -v /path/to/tv:/tv \
   ghcr.io/daemonless/plex:latest
@@ -145,13 +162,16 @@ appjail oci run -Pd \
   -o container="args:--pull" \
   -o virtualnet=":<random> default" \
   -o nat \
+  -o expose="32400:32400 proto:tcp" \
   -e PUID=1000 \
   -e PGID=1000 \
   -e TZ=UTC \
   -e VERSION=container \
   -e PLEX_CLAIM= \
-  -o fstab="/path/to/containers/plex /config <pseudofs>" \
-  -o fstab="/path/to/containers/plex/transcode /transcode <pseudofs>" \ # optional
+  -e ADVERTISE_IP= \
+  -e ALLOWED_NETWORKS= \
+  -o fstab="/containers/plex /config <pseudofs>" \
+  -o fstab="/containers/plex/transcode /transcode <pseudofs>" \ # optional
   -o fstab="/path/to/movies /movies <pseudofs>" \
   -o fstab="/path/to/tv /tv <pseudofs>" \
   ghcr.io/daemonless/plex:latest plex
@@ -160,6 +180,10 @@ appjail oci run -Pd \
 Save the files above, then run `sh run.sh`.
 
 
+> [!WARNING]
+> Exposing ports in AppJail means that your service can be reached from remote hosts. If that is not your intention, do not expose the ports and communicate with the service using the jail's IPv4 address or hostname assigned by the virtual network.
+>
+> To avoid exposing ports, just remove the `expose` option in your `appjail-director.yml` or from your command-line arguments.
 
 ### Bastille
 
@@ -179,9 +203,11 @@ services:
       - TZ=UTC
       - VERSION=container
       - PLEX_CLAIM=
+      - ADVERTISE_IP=
+      - ALLOWED_NETWORKS=
     volumes:
-      - "/path/to/containers/plex:/config"
-      - "/path/to/containers/plex/transcode:/transcode"
+      - "/containers/plex:/config"
+      - "/containers/plex/transcode:/transcode"
       - "/path/to/movies:/movies"
       - "/path/to/tv:/tv"
 ```
@@ -195,8 +221,10 @@ bastille create -O \
   --env TZ=UTC \
   --env VERSION=container \
   --env PLEX_CLAIM= \
-  --volume /path/to/containers/plex /config \
-  --volume /path/to/containers/plex/transcode /transcode \
+  --env ADVERTISE_IP= \
+  --env ALLOWED_NETWORKS= \
+  --volume /containers/plex /config \
+  --volume /containers/plex/transcode /transcode \
   --volume /path/to/movies /movies \
   --volume /path/to/tv /tv \
   plex ghcr.io/daemonless/plex:latest inherit
@@ -217,14 +245,20 @@ bastille create -O \
       TZ: "UTC"
       VERSION: "container"
       PLEX_CLAIM: ""
+      ADVERTISE_IP: ""
+      ALLOWED_NETWORKS: ""
+    ports:
+      - "32400:32400"
     volumes:
-      - "/path/to/containers/plex:/config"
-      - "/path/to/containers/plex/transcode:/transcode" # optional
+      - "/containers/plex:/config"
+      - "/containers/plex/transcode:/transcode" # optional
       - "/path/to/movies:/movies"
       - "/path/to/tv:/tv"
 ```
 
 Save as `plex-deploy.yaml`, then run `ansible-playbook plex-deploy.yaml`.
+
+Access at: `http://localhost:32400`
 
 ## Parameters
 
@@ -237,6 +271,8 @@ Save as `plex-deploy.yaml`, then run `ansible-playbook plex-deploy.yaml`.
 | `TZ` | `UTC` | Timezone for the container |
 | `VERSION` | `container` | Plex update channel (container, public, plexpass) |
 | `PLEX_CLAIM` | `` | Claim token — get one at https://plex.tv/claim |
+| `ADVERTISE_IP` | `` | URLs clients should use to reach the server, comma-separated, e.g. http://192.168.1.10:32400 (bridge networking) |
+| `ALLOWED_NETWORKS` | `` | Networks allowed in without signing in, comma-separated, e.g. 192.168.1.0/24 |
 
 ### Volumes
 
@@ -247,24 +283,33 @@ Save as `plex-deploy.yaml`, then run `ansible-playbook plex-deploy.yaml`.
 | `/movies` | Movie library |
 | `/tv` | TV series library |
 
-## Host Networking
+### Ports
 
-Plex requires `network_mode: host` on FreeBSD Podman. Bridge networking causes the Plex setup
-wizard to reject all connections with "Not authorized" because it only allows access from
-`127.0.0.1`, and bridge networking makes all connections appear to come from the gateway IP.
+| Port | Protocol | Description |
+|------|----------|-------------|
+| `32400` | TCP | Web UI |
 
-With host networking, ports are bound directly on the host — no `ports:` mapping needed.
+## First-time setup
 
-## Initial Setup
+An unclaimed Plex server only accepts its setup wizard from `127.0.0.1`; from anywhere else
+it answers "Not authorized". Set one of these before the first start:
 
-The Plex setup wizard must be accessed from `localhost`. After starting the container, create
-an SSH tunnel from your local machine:
+- `ALLOWED_NETWORKS` to your LAN (e.g. `192.168.1.0/24`), then open `http://<host>:32400/web`,
+  sign in and finish the wizard. Devices on those networks can use Plex without signing in.
+- `PLEX_CLAIM` to a token from https://plex.tv/claim. The container claims the server on
+  first start; then sign in at `http://<host>:32400/web`. Tokens expire 4 minutes after you
+  get one: fetch it right before the first start.
 
-```
-ssh -L 32400:localhost:32400 <your-host>
-```
+Set `ADVERTISE_IP` to the address clients should use (e.g. `http://192.168.1.10:32400`), so
+Plex doesn't advertise its container-internal IP.
 
-Then open `http://localhost:32400/web` in your browser to complete setup.
+`PLEX_CLAIM`, `ADVERTISE_IP` and `ALLOWED_NETWORKS` work as in the official Plex image.
+
+## Host networking (optional)
+
+`network_mode: host` (`--network host`) additionally lets Plex apps on your LAN discover the
+server (GDM) and enables DLNA. Use it instead of the `32400` port mapping where your platform
+supports it.
 
 
 **Architectures:** amd64

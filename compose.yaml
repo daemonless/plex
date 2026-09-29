@@ -21,6 +21,13 @@ x-daemonless:
         desc: "Claim token — get one at https://plex.tv/claim"
         optional: true
         level: primary
+      ADVERTISE_IP:
+        desc: "URLs clients should use to reach the server, comma-separated, e.g. http://192.168.1.10:32400 (bridge networking)"
+        optional: true
+      ALLOWED_NETWORKS:
+        desc: "Networks allowed in without signing in, comma-separated, e.g. 192.168.1.0/24"
+        optional: true
+        level: primary
     volumes:
       /config: "Configuration directory"
       /transcode:
@@ -34,31 +41,35 @@ x-daemonless:
       32400: "Web UI"
 
   notes: |
-    ## Host Networking
+    ## First-time setup
 
-    Plex requires `network_mode: host` on FreeBSD Podman. Bridge networking causes the Plex setup
-    wizard to reject all connections with "Not authorized" because it only allows access from
-    `127.0.0.1`, and bridge networking makes all connections appear to come from the gateway IP.
+    An unclaimed Plex server only accepts its setup wizard from `127.0.0.1`; from anywhere else
+    it answers "Not authorized". Set one of these before the first start:
 
-    With host networking, ports are bound directly on the host — no `ports:` mapping needed.
+    - `ALLOWED_NETWORKS` to your LAN (e.g. `192.168.1.0/24`), then open `http://<host>:32400/web`,
+      sign in and finish the wizard. Devices on those networks can use Plex without signing in.
+    - `PLEX_CLAIM` to a token from https://plex.tv/claim. The container claims the server on
+      first start; then sign in at `http://<host>:32400/web`. Tokens expire 4 minutes after you
+      get one: fetch it right before the first start.
 
-    ## Initial Setup
+    Set `ADVERTISE_IP` to the address clients should use (e.g. `http://192.168.1.10:32400`), so
+    Plex doesn't advertise its container-internal IP.
 
-    The Plex setup wizard must be accessed from `localhost`. After starting the container, create
-    an SSH tunnel from your local machine:
+    `PLEX_CLAIM`, `ADVERTISE_IP` and `ALLOWED_NETWORKS` work as in the official Plex image.
 
-    ```
-    ssh -L 32400:localhost:32400 <your-host>
-    ```
+    ## Host networking (optional)
 
-    Then open `http://localhost:32400/web` in your browser to complete setup.
+    `network_mode: host` (`--network host`) additionally lets Plex apps on your LAN discover the
+    server (GDM) and enables DLNA. Use it instead of the `32400` port mapping where your platform
+    supports it.
 
 services:
   plex:
     image: ghcr.io/daemonless/plex:latest
     container_name: plex
     restart: unless-stopped
-    network_mode: host
+    ports:
+      - 32400:32400
 
     environment:
       - PUID=1000
@@ -66,6 +77,8 @@ services:
       - TZ=UTC
       - VERSION=container
       - PLEX_CLAIM=
+      - ADVERTISE_IP=
+      - ALLOWED_NETWORKS=
 
     volumes:
       - /path/to/containers/plex:/config
