@@ -44,8 +44,8 @@ services:
       - ADVERTISE_IP=  # URLs clients should use to reach the server, comma-separated, e.g. http://192.168.1.10:32400 (bridge networking)
       - ALLOWED_NETWORKS=  # Networks allowed in without signing in, comma-separated, e.g. 192.168.1.0/24
     volumes:
-      - "/path/to/containers/plex:/config"
-      - "/path/to/containers/plex/transcode:/transcode" # optional
+      - "/containers/plex:/config"
+      - "/containers/plex/transcode:/transcode" # optional
       - "/path/to/movies:/movies"
       - "/path/to/tv:/tv"
     ports:
@@ -103,9 +103,9 @@ services:
       - tv: /tv
 volumes:
   plex:
-    device: '/path/to/containers/plex'
+    device: '/containers/plex'
   plex_transcode:
-    device: '/path/to/containers/plex/transcode'
+    device: '/containers/plex/transcode'
   movies:
     device: 'movies'
   tv:
@@ -125,59 +125,6 @@ OPTION from=ghcr.io/daemonless/plex:${tag}
 ```
 
 Save the files above, then run `appjail-director up`.
-
-
-> [!WARNING]
-> Exposing ports in AppJail means that your service can be reached from remote hosts. If that is not your intention, do not expose the ports and communicate with the service using the jail's IPv4 address or hostname assigned by the virtual network.
->
-> To avoid exposing ports, just remove the `expose` option in your `appjail-director.yml` or from your command-line arguments.
-
-### Podman CLI
-
-```bash
-podman run -d --name plex \
-  -p 32400:32400 \
-  -e PUID=1000 \
-  -e PGID=1000 \
-  -e TZ=UTC \
-  -e VERSION=container \
-  -e PLEX_CLAIM= \
-  -e ADVERTISE_IP= \
-  -e ALLOWED_NETWORKS= \
-  -v /path/to/containers/plex:/config \
-  -v /path/to/containers/plex/transcode:/transcode # optional \
-  -v /path/to/movies:/movies \
-  -v /path/to/tv:/tv \
-  ghcr.io/daemonless/plex:latest
-```
-
-Save as `run.sh`, then run `sh run.sh`.
-
-### AppJail
-
-
-```bash
-appjail oci run -Pd \
-  -o overwrite=force \
-  -o container="args:--pull" \
-  -o virtualnet=":<random> default" \
-  -o nat \
-  -o expose="32400:32400 proto:tcp" \
-  -e PUID=1000 \
-  -e PGID=1000 \
-  -e TZ=UTC \
-  -e VERSION=container \
-  -e PLEX_CLAIM= \
-  -e ADVERTISE_IP= \
-  -e ALLOWED_NETWORKS= \
-  -o fstab="/path/to/containers/plex /config <pseudofs>" \
-  -o fstab="/path/to/containers/plex/transcode /transcode <pseudofs>" \ # optional
-  -o fstab="/path/to/movies /movies <pseudofs>" \
-  -o fstab="/path/to/tv /tv <pseudofs>" \
-  ghcr.io/daemonless/plex:latest plex
-```
-
-Save the files above, then run `sh run.sh`.
 
 
 > [!WARNING]
@@ -206,57 +153,13 @@ services:
       - ADVERTISE_IP=
       - ALLOWED_NETWORKS=
     volumes:
-      - "/path/to/containers/plex:/config"
-      - "/path/to/containers/plex/transcode:/transcode"
+      - "/containers/plex:/config"
+      - "/containers/plex/transcode:/transcode"
       - "/path/to/movies:/movies"
       - "/path/to/tv:/tv"
 ```
 
-Save as `bastille-compose.yml`, then run `bastille up`. Or via CLI:
-
-```bash
-bastille create -O \
-  --env PUID=1000 \
-  --env PGID=1000 \
-  --env TZ=UTC \
-  --env VERSION=container \
-  --env PLEX_CLAIM= \
-  --env ADVERTISE_IP= \
-  --env ALLOWED_NETWORKS= \
-  --volume /path/to/containers/plex /config \
-  --volume /path/to/containers/plex/transcode /transcode \
-  --volume /path/to/movies /movies \
-  --volume /path/to/tv /tv \
-  plex ghcr.io/daemonless/plex:latest inherit
-```
-
-### Ansible
-
-```yaml
-- name: Deploy plex
-  containers.podman.podman_container:
-    name: plex
-    image: "ghcr.io/daemonless/plex:latest"
-    state: started
-    restart_policy: always
-    env:
-      PUID: "1000"
-      PGID: "1000"
-      TZ: "UTC"
-      VERSION: "container"
-      PLEX_CLAIM: ""
-      ADVERTISE_IP: ""
-      ALLOWED_NETWORKS: ""
-    ports:
-      - "32400:32400"
-    volumes:
-      - "/path/to/containers/plex:/config"
-      - "/path/to/containers/plex/transcode:/transcode" # optional
-      - "/path/to/movies:/movies"
-      - "/path/to/tv:/tv"
-```
-
-Save as `plex-deploy.yaml`, then run `ansible-playbook plex-deploy.yaml`.
+Save as `bastille-compose.yml`, then run `bastille up`.
 
 Access at: `http://localhost:32400`
 
