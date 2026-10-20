@@ -1,11 +1,11 @@
 {
-  "generated": "2026-10-10T23:50:53Z",
+  "generated": "2026-10-20T19:02:42Z",
   "image": "plex",
   "tags": {
     "latest": {
-      "app_version": "1.43.4.10903-e5521bd8c",
+      "app_version": "1.43.5.11029-6bf8af3f0",
       "arch": "amd64",
-      "generated": "2026-10-10T23:50:04Z",
+      "generated": "2026-10-20T19:01:58Z",
       "packages": {
         "dotnet": [],
         "freebsd": [
@@ -189,7 +189,7 @@
               "BSD2CLAUSE"
             ],
             "name": "FreeBSD-runtime",
-            "version": "15.1p4"
+            "version": "15.1p5"
           },
           {
             "licenses": [
@@ -238,7 +238,7 @@
               "PD"
             ],
             "name": "FreeBSD-zoneinfo",
-            "version": "15.1p4"
+            "version": "15.1p5"
           },
           {
             "licenses": [
@@ -252,7 +252,7 @@
               "MPL20"
             ],
             "name": "ca_root_nss",
-            "version": "3.130"
+            "version": "3.131"
           },
           {
             "licenses": [
@@ -280,7 +280,7 @@
               "BSD2CLAUSE"
             ],
             "name": "pkg",
-            "version": "2.7.5"
+            "version": "2.8.4"
           },
           {
             "licenses": [
