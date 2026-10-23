@@ -40,15 +40,4 @@ fi
 # Ensure correct ownership
 chown -R bsd:bsd /config /transcode /usr/local/share/plexmediaserver /app
 
-# Save claim token for post-start script to use
-if [ -n "$PLEX_CLAIM" ]; then
-    # Check if already claimed
-    if [ -f "$PREF_FILE" ] && grep -q 'PlexOnlineToken="[^"]' "$PREF_FILE" 2>/dev/null; then
-        echo "[plex] Server already claimed, skipping"
-    else
-        echo "[plex] Claim token provided, will claim after Plex starts"
-        echo "$PLEX_CLAIM" > /tmp/plex_claim_token
-    fi
-fi
-
 echo "[plex] Configuration complete"

@@ -1,5 +1,5 @@
 #!/bin/sh
-# Plex Media Server s6 service
+# Start plex; /init has already dropped to the run user.
 
 export HOME=/config
 export PLEX_MEDIA_SERVER_APPLICATION_SUPPORT_DIR="/config/Library/Application Support"
@@ -13,10 +13,12 @@ export TMPDIR=/transcode
 export LD_LIBRARY_PATH=/usr/local/share/plexmediaserver/lib
 export PATH="/usr/local/bin:/usr/bin:/bin"
 
-# Background claim task - waits for Plex to start, then claims
-if [ -f /tmp/plex_claim_token ]; then
+# Background claim task - waits for Plex to start, then claims (unless
+# Preferences.xml already has an online token)
+PREF_FILE="$PLEX_MEDIA_SERVER_APPLICATION_SUPPORT_DIR/Plex Media Server/Preferences.xml"
+if [ -n "$PLEX_CLAIM" ] && ! grep -q 'PlexOnlineToken="[^"]' "$PREF_FILE" 2>/dev/null; then
     (
-        CLAIM_TOKEN=$(cat /tmp/plex_claim_token)
+        CLAIM_TOKEN=$PLEX_CLAIM
         echo "[plex] Waiting for Plex to start before claiming..."
         # Wait up to 60 seconds for Plex to be ready
         for i in $(seq 1 60); do
@@ -36,14 +38,14 @@ if [ -f /tmp/plex_claim_token ]; then
                     "HTTP/1.1 200"*) echo "[plex] Server claimed successfully!" ;;
                     *) echo "[plex] Claim failed (${STATUS:-no response}); tokens expire 4 minutes after https://plex.tv/claim" ;;
                 esac
-                rm -f /tmp/plex_claim_token
+                CLAIMED=1
                 break
             fi
             sleep 1
         done
-        [ -f /tmp/plex_claim_token ] && echo "[plex] Timed out waiting for Plex"
+        [ -n "$CLAIMED" ] || echo "[plex] Timed out waiting for Plex"
     ) &
 fi
 
 cd /usr/local/share/plexmediaserver
-exec s6-setuidgid bsd "/usr/local/share/plexmediaserver/Plex Media Server"
+exec "/usr/local/share/plexmediaserver/Plex Media Server"

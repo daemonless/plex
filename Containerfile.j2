@@ -1,5 +1,5 @@
 ARG BASE_VERSION=15
-FROM ghcr.io/daemonless/base:${BASE_VERSION}
+FROM ghcr.io/daemonless/base-exec:${BASE_VERSION}
 
 ARG FREEBSD_ARCH=amd64
 ARG UPSTREAM_URL="https://plex.tv/api/downloads/5.json"
@@ -59,9 +59,9 @@ RUN PLEX_URL="https://plex.tv/downloads/latest/1?channel=16&build=freebsd-x86_64
 
 # Copy service definition and init scripts
 COPY root/ /
+RUN chmod +x /daemonless/libexec/plex /daemonless/init.d/*
 
-# Make scripts executable
-RUN chmod +x /etc/services.d/plex/run /etc/services.d/plex/finish /etc/cont-init.d/* 2>/dev/null || true
+CMD ["/daemonless/libexec/plex"]
 
 # --- Expose (Injected by Generator) ---
 {%- if ports %}
